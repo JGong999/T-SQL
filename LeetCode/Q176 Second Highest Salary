@@ -1,0 +1,14 @@
+Create table Employee (Id int, Salary int)
+insert into Employee (Id, Salary) values ('1', '100')
+insert into Employee (Id, Salary) values ('2', '200')
+insert into Employee (Id, Salary) values ('3', '300')
+
+IF (SELECT COUNT(DISTINCT Salary) FROM Employee) < 2
+	SELECT null AS SecondHighestSalary
+ELSE
+	SELECT Salary AS SecondHighestSalary
+	FROM(
+		SELECT DISTINCT Salary, DENSE_RANK() OVER (ORDER BY Salary DESC) AS Rank
+		FROM Employee
+	) sub
+	WHERE Rank = 2
