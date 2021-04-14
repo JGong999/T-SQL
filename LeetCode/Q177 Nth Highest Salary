@@ -1,0 +1,14 @@
+-- Data from Q176 
+
+CREATE FUNCTION getNthHighestSalary(@N INT) RETURNS INT AS
+BEGIN
+    RETURN (
+        SELECT TOP 1 Salary AS [getNthHighestSalary(@N)]
+        FROM(
+        SELECT Salary, DENSE_RANK() OVER (ORDER BY Salary DESC) AS Rank
+        FROM Employee
+        ) sub
+        WHERE Rank = @N
+    );
+END
+
