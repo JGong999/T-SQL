@@ -8,6 +8,7 @@ insert into seat (id, student) values ('5', 'Jeames')
 
 insert into seat (id, student) values ("6","Julia")
 
+--Method 1
 select case when id-lag=2 then id-1 else id end as id, student
 from(
 select id3 as id, student,
@@ -23,3 +24,28 @@ where s1.id % 2 = 1 and (s1.id=s2.id-1 or s1.id=s2.id)
 ) sub
 ) sub2
 order by id
+
+--Method 2
+SELECT
+(   CASE
+        WHEN id % 2 != 0 AND counts != id THEN id + 1
+        WHEN id % 2 != 0 AND counts = id THEN id
+        ELSE id - 1
+    END) AS id,
+    student
+FROM
+    seat,
+    (SELECT
+        COUNT(*) AS counts
+    FROM
+        seat) AS seat_counts
+ORDER BY id ASC
+
+--Method 3
+SELECT
+   *, s1.id, COALESCE(s2.student, s1.student) AS student
+FROM
+    seat s1
+        LEFT JOIN
+    seat s2 ON (s1.id+1)^1-1 = s2.id
+ORDER BY s1.id
