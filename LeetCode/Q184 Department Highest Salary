@@ -1,0 +1,39 @@
+Create table Employee (Id int, Name varchar(255), Salary int, DepartmentId int)
+Create table Department (Id int, Name varchar(255))
+
+insert into Employee (Id, Name, Salary, DepartmentId) values ('1', 'Joe', '70000', '1')
+insert into Employee (Id, Name, Salary, DepartmentId) values ('2', 'Jim', '90000', '1')
+insert into Employee (Id, Name, Salary, DepartmentId) values ('3', 'Henry', '80000', '2')
+insert into Employee (Id, Name, Salary, DepartmentId) values ('4', 'Sam', '60000', '2')
+insert into Employee (Id, Name, Salary, DepartmentId) values ('5', 'Max', '90000', '1')
+
+insert into Department (Id, Name) values ('1', 'IT')
+insert into Department (Id, Name) values ('2', 'Sales')
+
+--Method 1
+select d.Name as Department, e.Name as Employee, e.Salary
+from Employee e left join Department d
+on e.DepartmentId = d.Id
+inner join
+(
+	select DepartmentId, max(Salary) as Salary
+	from Employee
+	group by DepartmentId
+) sub
+on e.DepartmentId = sub.DepartmentId and e.Salary = sub.Salary
+where d.Name is not null
+order by d.Name, e.Name
+
+--Method 2: with CTE
+WITH emp AS(
+SELECT RANK() OVER(PARTITION BY DepartmentId ORDER BY Salary Desc) rank,
+    DepartmentId,
+    Name,
+    Salary
+    From Employee184)
+SELECT d.Name AS 'Department',
+       e.Name AS 'Employee',
+       e.Salary
+       FROM emp e JOIN Department184 d ON (d.Id=e.DepartmentId)
+       WHERE e.rank=1
+
