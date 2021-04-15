@@ -1,0 +1,25 @@
+Create table seat(id int, student varchar(255))
+
+insert into seat (id, student) values ('1', 'Abbot')
+insert into seat (id, student) values ('2', 'Doris')
+insert into seat (id, student) values ('3', 'Emerson')
+insert into seat (id, student) values ('4', 'Green')
+insert into seat (id, student) values ('5', 'Jeames')
+
+insert into seat (id, student) values ("6","Julia")
+
+select case when id-lag=2 then id-1 else id end as id, student
+from(
+select id3 as id, student,
+	   isnull(lag(id3) over(order by id3), 0) as lag
+from( 
+select s2.student, 
+	   case
+		when s2.id % 2 = 1 then s2.id + 1
+		else s2.id - 1
+	   end as id3
+from seat s1, seat s2
+where s1.id % 2 = 1 and (s1.id=s2.id-1 or s1.id=s2.id)
+) sub
+) sub2
+order by id
